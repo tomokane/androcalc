@@ -1,18 +1,19 @@
 package jp.critique.androcalc;
 
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.TextView;
+import android.view.Gravity;
 
 public class TenkeyAdapter extends BaseAdapter {
 	
-	private static final String TAG = "TenkeyAdapter";
 	private Button btn;
+	private TextView txt;
 	
 	private String[] buttunLabel = new String[] {
-						"C","+/-","ÅÄ","x"
+						"C","+/-","√∑","x"
 	                    ,"7","8","9","-"
 	                    ,"4","5","6","+"
 	                    ,"3","2","1","="
@@ -39,24 +40,16 @@ public class TenkeyAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		// TODO Auto-generated method stub
-		
-		btn = new Button(parent.getContext());
+		txt = new TextView(parent.getContext());
 		if(buttunLabel[position] != null) {
-			btn.setText(String.valueOf(buttunLabel[position]));
-			btn.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					Log.v(TAG,"click btn=");
-					
-				}
-				
-			});
-			btn.setClickable(false);
+			txt.setText(String.valueOf(buttunLabel[position]));
+			txt.setTextSize(50f);
+			txt.setGravity(Gravity.CENTER);
+			txt.setBackgroundResource(R.drawable.shape_radio_blue);
+			txt.setPadding(0, 0, 0, 0);
 		}
 		
-		return btn;
+		return txt;
 	}
 
 }

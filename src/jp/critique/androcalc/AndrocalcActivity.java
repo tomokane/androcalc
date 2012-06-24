@@ -1,13 +1,15 @@
 package jp.critique.androcalc;
 
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
+import android.graphics.PixelFormat;
 
 public class AndrocalcActivity extends Activity {
 
@@ -22,6 +24,10 @@ public class AndrocalcActivity extends Activity {
 		return result;
 	}
 
+	public void resetValue(){
+		this.result = 0f;
+	}
+	
 	public void setResult(float result) {
 		this.result = result;
 		display.setText(String.valueOf(this.result));
@@ -32,10 +38,12 @@ public class AndrocalcActivity extends Activity {
 	}
 
 	public void setCurrentOp(String currentOp) {
+		inputFirst = true;
 		this.currentOp = currentOp;
 	}
 
 	public void resetCurrentOp() {
+		inputFirst = true;
 		setCurrentOp("reset");
 	}
 
@@ -44,18 +52,23 @@ public class AndrocalcActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+		
+		this.getWindow().setFormat(PixelFormat.RGBA_8888);
 
 		display = (TextView) findViewById(R.id.editText1);
+		display.setGravity(Gravity.RIGHT);
 
 		calcClear();
 		resetCurrentOp();
-
-		GridView grid = (GridView) findViewById(R.id.gridView1);
-		grid.setAdapter(new TenkeyAdapter());
 		
-//		TenkeyAdapter adapter = (TenkeyAdapter) grid.getAdapter();
-//		Button obj = (Button) adapter.getItem(0);
-//		Log.v(TAG, (String) obj.getText());
+		GridView grid = (GridView) findViewById(R.id.gridView1);
+		grid.setPadding(0, 0, 0, 0);
+		grid.setGravity(Gravity.BOTTOM);
+		grid.setHorizontalSpacing(0);
+		grid.setAdapter(new TenkeyAdapter());
+		grid.setSelector(R.drawable.listselector);
+		
+		
 
 		grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -65,17 +78,25 @@ public class AndrocalcActivity extends Activity {
 				
 				Log.v(TAG,"position=" + position);
 				
-				GridView grid = (GridView) parent;
-				Button btn = (Button) grid.getItemAtPosition(position);
+				TextView tv = (TextView) view;
+				CharSequence cs = tv.getText();
+				String labelValue = cs.toString();
+				Log.v(TAG, labelValue);
 
 				if(position == 0){
 					calcClear();
 				}else if(position == 1){
 					inverseValue();
-				}else if((position > 1 && position < 4) || position == 7 || position == 11){
-					changeCurrentOp((String) btn.getText());
-				}else if((position > 3 && position < 7) || (position > 7 && position < 11) || (position > 11 && position < 15) || position == 16){
-					inputValue(Integer.parseInt((String) btn.getText()));
+				}else if(position == 15){
+					calicurateValues();
+					resetValue();
+				}else if((position > 1 & position < 4) | 
+						(position == 7) | (position == 11)){
+					changeCurrentOp(labelValue);
+				}else if((position > 3 & position < 7) |
+						 (position > 7 & position < 11) |
+						 (position > 11 & position < 15) | (position == 16)){
+					inputValue(Integer.parseInt(labelValue));
 				}
 
 
@@ -105,8 +126,10 @@ public class AndrocalcActivity extends Activity {
 			display.setText(tmp + String.valueOf(value));
 		}
 	}
-
-	public void changeCurrentOp(String op) {
+	
+	public void calicurateValues(){
+		String op = getCurrentOp();
+		
 		float tmp = Float.parseFloat((String) display.getText());
 		float currentResult = getResult();
 		if(op == "+"){
@@ -115,12 +138,20 @@ public class AndrocalcActivity extends Activity {
 			tmp = tmp - currentResult;
 		}else if(op == "x"){
 			tmp = tmp * currentResult;
-		}else if(op == "€"){
+		}else if(op == "Ã·"){
 			tmp = tmp / currentResult;
 		}
+		inputFirst = true;
+
+		setResult(tmp);
+		
+	}
+
+	public void changeCurrentOp(String op) {
+		
+		calicurateValues();
 
 		setCurrentOp(op);
-		setResult(tmp);
 	}
 
 }
